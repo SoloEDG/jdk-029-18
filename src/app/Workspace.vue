@@ -1,16 +1,25 @@
 <script setup lang="ts">
-import { AudioLines } from '@lucide/vue'
+import { computed, ref } from 'vue'
+import { AudioLines, Ear, Headphones } from '@lucide/vue'
 import { songs, SongCatalog, SongHeading, TransportBar } from '../features/playback'
 import { LyricStage, PhraseList } from '../features/lyrics'
 import { RecordControls } from '../features/capture'
 import { PitchPanel } from '../features/pitch'
 import { ReviewPanel } from '../features/review'
+import { BlindTestPanel } from '../features/blindtest'
 import { useWorkspace } from './useWorkspace'
 
 const {
   transport, lyrics, pitch, review, capture, graphRange, graphPosition,
   selectLine, adjacent, selectSong, seek, toggleLoop, togglePlay, toggleRecording, listen,
 } = useWorkspace()
+
+const rightTab = ref<'review' | 'blind'>('review')
+const takeOptions = computed(() => review.visible.value.map((take, index) => ({
+  id: take.id,
+  label: `录音 ${review.visible.value.length - index}`,
+  audio: take.audio,
+})))
 </script>
 
 <template>
@@ -41,9 +50,16 @@ const {
         :selected="lyrics.selected.value" @toggle="toggleRecording" />
     </div>
     <aside class="right-rail">
-      <ReviewPanel :takes="review.visible.value" :slots="review.slots.value" :active-id="review.playingId.value"
+      <div class="rail-tabs" role="tablist">
+        <button type="button" role="tab" :aria-selected="rightTab === 'review'" :class="{ active: rightTab === 'review' }"
+          @click="rightTab = 'review'"><Headphones :size="15" /> 练习回顾</button>
+        <button type="button" role="tab" :aria-selected="rightTab === 'blind'" :class="{ active: rightTab === 'blind' }"
+          @click="rightTab = 'blind'"><Ear :size="15" /> 匿名对照</button>
+      </div>
+      <ReviewPanel v-show="rightTab === 'review'" :takes="review.visible.value" :slots="review.slots.value" :active-id="review.playingId.value"
         :selected="lyrics.selected.value" :notes="transport.song.value.notes" :issue="review.issue.value"
         @listen="listen" @choose="review.choose" />
+      <BlindTestPanel v-show="rightTab === 'blind'" :take-options="takeOptions" @issue="message => (review.issue.value = message)" />
     </aside>
   </main>
 </template>

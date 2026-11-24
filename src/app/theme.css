@@ -192,6 +192,14 @@ input[type=range]::-moz-range-thumb { border: none; background: var(--gold); wid
 .slot-a { color: #85cbd5; }
 .slot-b { color: #ec9fa9; }
 
+.rail-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.rail-tabs button {
+  flex: 1; min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--rule); border-radius: 5px; background: var(--inset); color: var(--muted); font-size: 12px;
+}
+.rail-tabs button.active { background: #302c21; border-color: #5d4c32; color: var(--gold); }
+.rail-tabs svg { color: var(--gold); }
+
 @media (min-width: 1600px) {
   .workspace { grid-template-columns: 235px minmax(0, 1fr) 245px; }
   .pitch-canvas { height: 245px; }
